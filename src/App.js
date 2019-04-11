@@ -3,25 +3,29 @@ import './App.scss';
 
 class App extends Component {
   state = {
+    hasError: false,
     coins: []
-  }
+  };
 
   componentDidMount() {
     this.fetchData();
   }
 
   render() {
-    const { coins } = this.state; 
+    const { coins, hasError } = this.state;
     return (
       <>
         <h3>coins:</h3>
         {
-          coins.map(coin => (
+          !hasError && coins.map(coin => (
             <div className='coin-container' key={coin.id}>
               <div className="name">{coin.name}</div>
               <div className="price">{coin.price_usd}</div>
             </div>
           ))
+        }
+        {
+          hasError && <h2 className='error-message'>Something is wrong</h2>
         }
       </>
     );
@@ -36,7 +40,10 @@ class App extends Component {
             return response.json();
           })
           .then(coins => {
-            this.setState({ coins })
+            this.setState({ coins, hasError: false })
+          })
+          .catch((e) => {
+            this.setState({ hasError: true, coins: [] })
           })
   }
 }
